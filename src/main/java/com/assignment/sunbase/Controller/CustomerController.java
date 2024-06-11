@@ -4,8 +4,9 @@ import com.assignment.sunbase.Model.Customer;
 import com.assignment.sunbase.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -16,42 +17,35 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-
-    @PostMapping("/")
-    public String createCustomer(@RequestBody Customer customer) {
-         new ResponseEntity<>(customerService.save(customer), HttpStatus.CREATED);
-         return "index";
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerService.saveCustomer(customer);
     }
-
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        Optional<Customer> existingCustomer = customerService.findById(id);
-        if (existingCustomer.isPresent()) {
-            customer.setId(id);
-            return new ResponseEntity<>(customerService.save(customer), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody
+    Customer customer) {
+        return customerService.updateCustomer(id, customer);
     }
-
     @GetMapping
-    public ResponseEntity<Page<Customer>> getAllCustomers(@RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size,
-                                                          @RequestParam(defaultValue = "id") String sortField,
-                                                          @RequestParam(defaultValue = "asc") String sortDirection) {
-        return new ResponseEntity<>(customerService.findAll(page, size, sortField, sortDirection), HttpStatus.OK);
+    public Page<Customer> getAllCustomers(@RequestParam
+                                          Optional<String> search,
+                                          @RequestParam
+                                          Optional<Integer> page,
+                                          @RequestParam
+                                          Optional<Integer> size) {
+        Pageable pageable = PageRequest.of(page.orElse(0),
+                size.orElse(10));
+        return customerService.getCustomers(pageable,
+                search.orElse(""));
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.findById(id);
-        return customer.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public Customer getCustomerById(@PathVariable Long id) {
+        return customerService.getCustomerById(id).orElseThrow(() ->
+                new RuntimeException("Customer not found"));
     }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public void deleteCustomer(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
     }
 }
 
