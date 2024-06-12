@@ -16,10 +16,14 @@ This is a simple CRUD application for managing customers with JWT authentication
 1. Clone the repository.
 2. Configure MySQL database in `application.properties`.
 3. Run the Spring Boot application.
-4. Open `index.html` in a web browser.
+4. Use PostMan to register User it is post localhost:8080/register
+5. after register post localhost:8080/authenticate endpoint
+6. token generated
+7. 
 
 ## API Endpoints
 
+- `POST /register`: Register User .
 - `POST /authenticate`: Authenticate a user and return a JWT token.
 - `POST /api/customers`: Create a new customer.
 - `PUT /api/customers/{id}`: Update an existing customer.
