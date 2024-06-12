@@ -17,7 +17,7 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-    @PostMapping
+    @PostMapping("/post")
     public Customer createCustomer(@RequestBody Customer customer) {
         return customerService.saveCustomer(customer);
     }
@@ -26,7 +26,7 @@ public class CustomerController {
     Customer customer) {
         return customerService.updateCustomer(id, customer);
     }
-    @GetMapping
+    @GetMapping("/get")
     public Page<Customer> getAllCustomers(@RequestParam
                                           Optional<String> search,
                                           @RequestParam
